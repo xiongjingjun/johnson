@@ -4,5 +4,5 @@
 > spark-class org.apache.spark.deploy.master.Master
 
 **starting workers:**
-> spark-class org.apache.spark.deploy.worker.Worker spark://172.20.7.153:7077
+> spark-class org.apache.spark.deploy.worker.Worker spark://{host}:7077
 
