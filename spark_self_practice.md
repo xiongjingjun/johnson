@@ -1,8 +1,8 @@
-分布式计算Spark介绍、本地&ADN实践分享
+分布式计算Spark介绍、本地&项目实践分享
 
 # 摘要：
 围绕AI的数据工程，遵循着摩尔定律。不管模型、应用层怎么迭代，数据处理由单机并发的原始时代已处于集群并发的现代时期，本着“存算分离”原则。动不动TB级甚至PB级原始数据的加工处理，对执行效率的诉求也愈加强烈，Apache Spark就这样应运而生。除了本身对数据做分布式完成‘负载均衡’外，还提供不少例如数据集DataFrame、应用层SQL操作(函数计算)、各数据源连接、各文件类型(包括parquet)读写加载、MLLIB等类库支持。
-本篇从大数据相关背景出发、介绍了关于Apache Spark的架构及各组件元素、本地组件集群的快速实践 及 最后关于ADN通信大模型关于引入Spark对语料的ETL处理、安全合规扫描进行分布式计算提速的分享。
+本篇从大数据相关背景出发、介绍了关于Apache Spark的架构及各组件元素、本地组件集群的快速实践 及 最后关于项目产品类大模型关于引入Spark对语料的ETL处理、安全合规扫描进行分布式计算提速的分享。
 
 # 大数据处理相关背景
 AI工程之前，软件工程时代，随着系统用户量的逐渐膨胀，系统架构的演进：计算层面即由单机处理单机并发集群并发，存储层面则由分表(table)分库(schema)分区(patition)。计算 & 存储 两者本身是相互解耦的，也即存算分离、弹性可扩展的原则。当然高可用(韧性)角度，进一步考虑到异地容灾之类(本篇暂不讨论细则)。
@@ -114,7 +114,7 @@ Hadoop.dll & winutils.exe文件，将其至于{HADOOP_HOME}/bin目录下；否�
 a. 先启动Spark Master：spark-class org.apache.spark.deploy.master.Master
 可通过8080端口查看MasterUI
 b. 启动worker，注册到上述Spark Master: 
-spark-class org.apache.spark.deploy.worker.Worker spark://10.37.122.26:7077
+spark-class org.apache.spark.deploy.worker.Worker spark://{host}:7077
 c. 按上述步骤b，再启动一个worker
 d. 执行一起python的处理程序，启动一个Spark Application, 指派到上述Spark Cluster中，并执行完任务
 如上图，在Intellij IDE中，编写python脚本，并执行。
