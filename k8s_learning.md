@@ -1,5 +1,6 @@
-# K8S Components
+# 一. Overview
 
+## K8S Components
 **Core Plane Components**：Manage the overall state of the cluster
 1) **kube-apiserver**： The core component server that exposes the Kubernetes HTTP API
 2) **etcd**: Consistent and highly-available key value store for all API server data
@@ -20,58 +21,40 @@ extend the functionality of Kubernetes, including below examples.
 3) **Container Resource Monitoring**: For collecting and storing container metrics
 4) **Cluster-level Logging**: For saving container logs to a central log store
 
-# Objects in K8S
+## Objects in K8S
 **Each object** includes **two nested fileds**：
 a. **spec**：when creating an object, providing a description of the characteristics you want the resource to have its desired state, as well as some basic information about the object (such as a name).
 b. **status**：describes the current state of the object, supplied and updated by the Kubernetes system and its components.
 
 1. The **kubectl** command-line tool supports several different ways to **create and manage Kubernetes objects**
-
 2. **Each object** in your cluster has a **Name** that is unique for that type of resource. Every Kubernetes object also has a **UID** that is unique across your whole cluster.
-
 3. **Labels** are key/value pairs that are attached to objects. 
 Via a **label selector**, the client/user can identify a set of objects. The label selector is the core grouping primitive in Kubernetes.
-
 4. **Namespaces** are intended for use in environments with many users spread across multiple teams, or projects. Provide a mechanism for isolating groups of resources within a single cluster.
 Namespaces cannot be nested inside one another and each Kubernetes resource can only be in one namespace.
-
 A Kubernetes namespace provides the scope for Pods, Services, and Deployments in the cluster.
 
 **Initial namespaces**
-
 a. **default**: Kubernetes includes this namespace so that you can start using your new cluster without first creating a namespace.
-
 b. **kube-node-lease**: This namespace holds Lease objects associated with each node. Node leases allow the kubelet to send heartbeats so that the control plane can detect node failure.
-
 c. **kube-public**: This namespace is readable by all clients (including those not authenticated). This namespace is mostly reserved for cluster usage, in case that some resources should be visible and readable publicly throughout the whole cluster. The public aspect of this namespace is only a convention, not a requirement.
-
 d. **kube-system**：The namespace for objects created by the Kubernetes system.
 
 5. Annotations
-
 6. Field Selectors
-
 7. Finalizer
-
 You can **visualize** and **manage** Kubernetes objects with more tools than **kubectl** and the **dashboard**.
-
 applications are informal and described with metadata
-
 8. Recommended Labels
 You can visualize and manage Kubernetes objects with more tools than kubectl and the dashboard. A common set of labels allows tools to work interoperably, describing objects in a common manner that all tools can understand
-
 The **Deployment** is used to oversee the pods running the application itself.
-
 The **Service** is used to expose the application.
-
 9. Kubernetes API 
 The Kubernetes API lets you query and manipulate the state of objects in Kubernetes. The core of Kubernetes' control plane is the API server and the HTTP API that it exposes.
-
 Most operations can be performed through the kubectl command-line interface or other command-line tools, such as kubeadm, which in turn use the API. However, you can also access the API directly using REST calls. 
-
 Persistence: Kubernetes stores the serialized state of objects by writing them into **etcd**
 
-# Cluster Architecture
+# 二. Cluster Architecture
 A Kubernetes cluster consists of a control plane +  a set of worker machines, called nodes, that run containerized applications.
 
 The control plane manages the worker nodes and the Pods in the cluster.
@@ -81,8 +64,8 @@ The Container Runtime Interface (CRI) is the main protocol for the communication
 
 ## Communication between Nodes and the Control Plane
 1. **Node to Control Plane**:  The API server is configured to listen for remote connections on a secure HTTPS port with one or more forms of client authentication enabled. 
-a. **Nodes** should be provisioned with the public root certificate for the cluster such that they can connect securely to the API server along with valid client credentials. A good approach is that the client credentials provided to the kubelet are in the form of a client certificate
-b. **Pods** that wish to connect to the API server can do so securely by leveraging a service account so that Kubernetes will automatically inject the public root certificate and a valid bearer token into the pod when it is instantiated. The kubernetes service (in default namespace) is configured with a virtual IP address that is redirected (via kube-proxy) to the HTTPS endpoint on the API server. 
+a. **Nodes** should be provisioned with the public root **certificate** for the cluster such that they can connect securely to the API server along with valid client credentials. A good approach is that the client credentials provided to the kubelet are in the form of a client certificate
+b. **Pods** that wish to connect to the API server can do so securely by leveraging a **service account** so that Kubernetes will automatically inject the public root certificate and a valid bearer token into the pod when it is instantiated. The kubernetes service (in default namespace) is configured with a virtual IP address that is redirected (via kube-proxy) to the HTTPS endpoint on the API server. 
 2. **Control plane to node**
 a. via api server to kublet [can then use the --kubelet-certificate-authority flag to provide the API server with a root certificate bundle to use to verify the kubelet's serving certificate]
 b. via api server to nodes/pods/services [using plain HTTP connections and this way not currently safe]
@@ -115,7 +98,7 @@ two ways:
 a. Cascading deletion 
 b. Foreground cascading deletion
 
-# Containers
+# 三. Containers
 
 ### Images
 Container images are usually given a name. If you don't specify a registry hostname, Kubernetes assumes that you mean the Docker public registry. You can change this behaviour by setting default image registry in container runtime configuration.
@@ -139,7 +122,7 @@ There are two hooks that are exposed to Containers:
 
 2. PreStop: called immediately before a container is terminated due to an API request or management event such as a liveness/startup probe failure, preemption, resource contention and others.
 
-# Workload
+# 四. Workload
 A **workload** is an application running on Kubernetes. A workload can be a single component or several that work together.
 
 you can use workload resources that manage a set of pods on your behalf. These resources **configure controllers** that make sure the right number of the right kind of pod are running, to match the state you specified
@@ -182,12 +165,12 @@ Static Pods are managed directly by the kubelet daemon on a specific node, while
 **Pod Lifecycle**
 1. assigning a Pod to a specific node is called **binding**, and the process of selecting which node to use is called **scheduling**. Once a Pod has been scheduled and is bound to a node, Kubernetes tries to **run** that Pod on the node.
 2. Pod Phase: Pending, Running, Succeeded, Failed, Unknown
-3. Container Status: Waiting, Running，Terminated 
+3. Container Status: Waiting, Running, Terminated 
 4. Kubernetes manages **container failures within Pods** using a **restartPolicy**（Always, OnFailure, and Never）defined in the Pod spec. The restartPolicy for a Pod **applies to app containers** in the Pod and to regular **init containers**. 
 Having below 4 status in sequence:
 Initial crash, Repeated crashes, CrashLoopBackOff, Backoff reset
 5. A Pod has a **PodStatus**, which has an array of PodConditions. Kubelet manages the following **PodConditions：**
-PodScheduled， PodReadyToStartContainers, ContainersReady, Initialized, Ready
+PodScheduled, PodReadyToStartContainers, ContainersReady, Initialized, Ready
 6. **pod.readinessGates**: Your application can inject extra feedback or signals into PodStatus: Pod readiness. Set readinessGates in the Pod's spec to specify **a list of additional conditions** that the kubelet evaluates for Pod readiness.
 7. Pod network readiness: After a Pod gets scheduled on a node, it needs to be admitted by the kubelet and to have any required storage volumes mounted. Once these phases are complete, the kubelet works with a container runtime (using Container Runtime Interface (CRI)) to set up a runtime sandbox and configure networking for the Pod. 
 8. Container probes
@@ -228,12 +211,12 @@ b. files in a downwardAPI volume:
 【fieldRef】metadata.labels,metadata.annotations,metadata.name,metadata.namespace,metadata.uid
 【resourceFieldRef】resource: limits.cpu，resource: requests.cpu，resource: limits.memory，resource: requests.memory, etc.
 
-## Services, Load Balancing, and Networking
+# 五. Services, Load Balancing, and Networking
 **K8S network model**
 1. **contains several pieces**:
 a. **Each pod** in a cluster gets its **own unique cluster-wide IP address**. A pod has its own private network namespace which is shared by all of the containers within the pod.
 b. The **pod network** (also called a cluster network) handles communication between pods. Agents on a node (such as system daemons, or kubelet) can communicate with all pods on that node.
-c. The **Service API **lets you provide a stable IP address or hostname for a service implemented by one or more backend pods.
+c. The **Service API** lets you provide a stable IP address or hostname for a service implemented by one or more backend pods.
 d. The **Gateway API** (or its predecessor, Ingress) allows you to make Services accessible to clients that are outside the cluster.
 e. **NetworkPolicy** is a built-in Kubernetes API that allows you to control traffic between pods, or between pods and the outside world.
 
@@ -247,8 +230,8 @@ d. NetworkPolicy is generally also implemented by the pod network implementation
 1. A Service is a method for **exposing a network application** that is running as one or more Pods in your cluster
 2. A Service controller for that Service continuously scans for Pods that match its **selector**, and then makes any necessary updates to the set of EndpointSlices for the Service.
 3. Services **without** Selectors, by adding **EndpointSlices** object **manually** （setting the ‘kubernetes.io/service-name’ label）
-4.** Service Types**
-a. **ClusterIP **(default type): Exposes the Service on a cluster-internal IP
+4. **Service Types**
+a. **ClusterIP**(default type): Exposes the Service on a cluster-internal IP
 b. **NodePort**: Exposes the Service on each Node's IP at a static port (the NodePort)
 c. **LoadBalancer**: Exposes the Service externally using an external load balancer.
 d. **ExternalName**
@@ -277,8 +260,10 @@ c. **HTTPRoute**: Defines HTTP-specific rules for mapping traffic from a Gateway
 1. An **EndpointSlice** contains references to **a set of network endpoints**. The control plane automatically creates EndpointSlices for any Kubernetes Service that has a selector specified. These EndpointSlices include references to all the Pods that match the Service selector. EndpointSlices group network endpoints together by unique combinations of IP family, protocol, port number, and Service name.
 2. By default, the control plane creates and manages **EndpointSlices** to have no more than **100 endpoints each**. You can configure this with the --max-endpoints-per-slice kube-controller-manager flag, up to a maximum of 1000.
 
-## Storage 
+# 六. Storage 
+
 1. **Volume Category**
+
 Ephemeral volume types have a lifetime linked to a specific Pod, but persistent volumes exist beyond the lifetime of any individual pod
 
 To use a volume, specify the volumes to provide for the Pod in **.spec.volumes** and declare where to mount those volumes into containers in .spec.containers[*].volumeMounts
@@ -332,7 +317,7 @@ If a PV was dynamically provisioned for a new PVC, the loop will always bind tha
 6. Expanding PVCs: You can only expand a PVC if its storage class's **allowVolumeExpansion** field is set to true.
 
 7. Reclaim Policy
-a. Retain -- manual reclamation
+a. Retain -- manual reclaimation
 b. Recycle -- basic scrub (rm -rf /thevolume/*)
 c. Delete -- delete the volume
 
@@ -356,7 +341,7 @@ A VolumeSnapshot is a **request** for snapshot of a volume by a user. It is simi
 15. **CSI Volume Cloning**
 The CSI Volume Cloning feature adds support for specifying existing PVCs in the **dataSource** field to indicate a user would like to clone a Volume. The source PVC must be bound and available (not in use)
 
-## Configuration
+# 七. Configuration
 1. **Configuration Best Practices**
 a. Naked Pods will not be rescheduled in the event of a node failure.
 b. Create a Service before its corresponding backend workloads (Deployments or ReplicaSets). Any Service that a Pod wants to access must be created before the Pod itself, or else the environment variables will not be populated. DNS does not have this restriction.
@@ -381,7 +366,7 @@ a. With **kubeconfig** files, you can organize your clusters, users, and namespa
 b. A context element in a kubeconfig file is used to group access parameters under a convenient name. Each context has three parameters: **cluster, namespace, and user**. 
 c. if KUBECONFIG environment variable not set, kubectl uses the **default** kubeconfig file, **$HOME/.kube/config**
 
-## Security - Service Account
+# 八. Security - Service Account
 1. **Definition**: A service account is a type of **non-human account** that, in Kubernetes, provides a distinct **identity** in a Kubernetes cluster. **Application Pods, system components, and entities inside and outside the cluster** can use a specific ServiceAccount's credentials to identify as that ServiceAccount
 2. **Properties**: Namespaced, Lightweight, Portable
 3. By default, user accounts don't exist in the Kubernetes API server; instead, the API server treats user identities as opaque data
@@ -394,7 +379,7 @@ c. An external service needs to communicate with the Kubernetes API server. E.g.
 d. Use third-party security software in your cluster that relies on the ServiceAccount identity of different Pods to group those Pods into different contexts.
 6. Assign a ServiceAccount to a Pod: Set the **spec.serviceAccountName** field in the Pod specification. Kubernetes then automatically provides the credentials for that ServiceAccount to the Pod. 
 
-## Policies: Kubernetes policies are configurations that manage other configurations or runtime behaviors via **various forms** below
+# 九. Policies: Kubernetes policies are configurations that manage other configurations or runtime behaviors via **various forms** below
 a. Apply policies using **API objects**: **NetworkPolicies**(restrict ingress and egress traffic for a workload), **LimitRanges**(resource allocation constraints across different object kinds, e.g. pod or pvc), **ResourceQuotas**( limit resource consumption for a namespace)
 b. Apply policies using **admission controllers**
 c. Apply policies using **ValidatingAdmissionPolicy**: A ValidatingAdmissionPolicy operates on an API request and can be used to block, audit, and warn users about non-compliant configurations.
@@ -420,7 +405,7 @@ f. Limit PriorityClass consumption by default: It may be desired that pods at a 
 
 4. **Node Resource Managers**
 
-## Scheduling, Preemption and Eviction
+# 十. Scheduling, Preemption and Eviction
 1. kube-scheduler: the default scheduler for Kubernetes. 
 kube-scheduler selects a node for the pod in a 2-step operation: **Filtering** and then **Scoring**
 2. Assigning Pods to Nodes
@@ -433,29 +418,93 @@ d. Affinity and anti-affinity: nodeSelector is the simplest way to constrain Pod
 - Node/Pod affinity per scheduling profile: associate a profile with a node affinity, which is useful if a profile only applies to a specific set of nodes.
 - nodeName: nodeName is a field in the Pod spec. It is a more **direct** form of node selection than affinity or nodeSelector
 - Pod topology spread constraints
-3. Pod Overhead: In Kubernetes, Pod Overhead is a way to account for the resources consumed by the Pod infrastructure on top of the container requests & limits. It is set at admission time according to the overhead associated with the Pod's **RuntimeClass**.
+3. Pod Overhead: In Kubernetes, Pod Overhead is a way to account for the resources consumed by the Pod infrastructure on top of the container requests & limits. It is set at admission time according to the overhead associated with the Pod's **RuntimeClass**, which defines the **overhead** field.
+4. Configuring Pod **schedulingGates**: The schedulingGates field contains a list of strings, and each string literal is perceived as a criteria that Pod should be **satisfied** before considered schedulable. 
+5. **Dynamic Resource Allocation**: Dynamic resource allocation is an **API for requesting and sharing resources** between pods and containers inside a pod.
+a. Cluster-level API support for dynamic resource allocation under below conditions:
+- use K8s V1.33
+- enabled explicitly
+- install a resource driver for specific resources that are meant to be managed using this API
+b. resource.k8s.io/v1beta1 and resource.k8s.io/v1beta2 API groups provide these types: ResourceClaim, ResourceClaimTemplate, DeviceClass, ResourceSlice, DeviceTaintRule
+6. **Scheduler Performance Tuning**
+a. kube-scheduler is the Kubernetes default scheduler. It is responsible for placement of Pods on Nodes in a cluster.
+b. Nodes in a cluster that meet the scheduling requirements of a Pod are called feasible Nodes for the Pod. The scheduler finds feasible Nodes for a Pod and then runs a set of functions to score the feasible Nodes, picking a Node with the highest score among the feasible ones to run the Pod. The scheduler then notifies the API server about this decision in a process called **Binding**.
+7. **Pod Priority and Preemption**
+a. **how to use?**
+- Add one or more PriorityClasses.
+- Create Pods with priorityClassName set to one of the added PriorityClasses.
+b. **PriorityClass**: is a non-namespaced object that defines a mapping from a priority class name to the integer value of the priority. The higher the value, the higher the priority.
+c. **Pod priority**: After you have one or more PriorityClasses, you can create Pods that specify one of those PriorityClass names in their specifications. The priority admission controller uses the **priorityClassName** field and populates the integer value of the priority. If the priority class is not found, the Pod is rejected.
+8. **Node-pressure Eviction**: is the process by which the **kubelet** proactively terminates pods to reclaim resources on nodes. 
+The kubelet monitors resources like memory, disk space, and filesystem inodes on your cluster's nodes. When one or more of these resources reach specific consumption levels, the kubelet can proactively fail one or more pods on the node to reclaim resources and prevent starvation.
+9. **API-initiated Eviction**：is the process by which you use the **Eviction API** to create an Eviction object that triggers graceful pod termination.
+You can request eviction by calling the Eviction API directly, or programmatically using a client of the API server, like the kubectl drain command. This creates an Eviction object, which causes the API server to terminate the Pod.
 
-## Accessing Kubernetes API from a Pod
-1) Accessing the API from within a Pod
+# 十一. Cluster Administration
+##### 1. Cluster Networking
+a. Kubernetes is all about sharing machines among applications. Typically, sharing machines requires ensuring that two applications do not try to use the same ports. 
+b. Kubernetes clusters require to allocate non-overlapping IP addresses for Pods, Services and Nodes, from a range of available addresses configured in the following components:
+- The network plugin is configured to assign IP addresses to Pods.
+- The kube-apiserver is configured to assign IP addresses to Services.
+- The kubelet or the cloud-controller-manager is configured to assign IP addresses to Nodes.
+##### 2. Metrics For Kubernetes System Components
+Kubernetes components emit metrics in **Prometheus** format.
+In most cases metrics are available on /metrics endpoint of the HTTP server.
+##### 3. Proxies in Kubernetes
+several different proxies when using:
+a. The **kubectl proxy**
+- runs on a user's desktop or in a pod
+- proxies from a localhost address to the Kubernetes apiserver
+- client to proxy uses HTTP
+- proxy to apiserver uses HTTPS
+- locates apiserver
+- adds authentication headers
+b. The **apiserver proxy**
+- is a bastion built into the apiserver
+- connects a user outside of the cluster to cluster IPs which otherwise might not be reachable
+- runs in the apiserver processes
+- client to proxy uses HTTPS (or http if apiserver so configured)
+- proxy to target may use HTTP or HTTPS as chosen by proxy using available information
+- can be used to reach a Node, Pod, or Service
+- does load balancing when used to reach a Service
+c. The **kube proxy**
+- runs on each node
+- proxies UDP, TCP and SCTP
+- does not understand HTTP
+- provides load balancing
+- is only used to reach services
+d. **A Proxy/Load-balancer in front of apiserver(s)**
+existence and implementation varies from cluster to cluster (e.g. nginx)
+- sits between all clients and one or more apiservers
+- acts as load balancer if there are several apiservers.
+e. **Cloud Load Balancers on external services**
+- are provided by some cloud providers (e.g. AWS ELB, Google Cloud Load Balancer)
+- are created automatically when the Kubernetes service has type LoadBalancer
+- usually supports UDP/TCP only
+- SCTP support is up to the load balancer implementation of the cloud provider
+- implementation varies by cloud provider.
+
+# 十二. Others
+
+### Accessing Kubernetes API from a Pod
+1. Accessing the API from within a Pod
 When accessing the API from **within a Pod**, locating and authenticating to the API server are slightly different to the external client case. The easiest way to use the Kubernetes API from a Pod is to use one of the **official client libraries**. 
 
-2）Directly accessing the REST API 
+2. Directly accessing the REST API 
 While running in a Pod, your container can create an HTTPS URL for the Kubernetes API server by fetching the KUBERNETES_SERVICE_HOST and KUBERNETES_SERVICE_PORT_HTTPS environment variables. The API server's in-cluster address is also published to a Service named kubernetes in the default namespace so that pods may reference kubernetes.default.svc as a DNS name for the local API server.
 
-3）Using kubectl proxy
+3. Using kubectl proxy
 If you would like to query the API without an official client library, you can run kubectl proxy as the command of a new sidecar container in the Pod. This way, kubectl proxy will authenticate to the API and expose it on the localhost interface of the Pod, so that other containers in the Pod can use it directly.
 
 **Namespace:**
 Kubernetes supports multiple virtual clusters backed by the same physical cluster. These virtual clusters are called namespaces. They let you partition resources into logically named groups.
-
-
 
 use the **kubeadm** tool to create and manage Kubernetes clusters.
 
 When you call kubeadm init, the **kubelet configuration** is marshalled to disk at **/var/lib/kubelet**
 
 
-**Best Practice**:
+### Best Practice
 1. Large Clusters:
 **1.1** No more than 110 pods per node
 No more than 5,000 nodes
@@ -469,10 +518,8 @@ b. configure the API server to use it for storing events
 2. Running in Mutiple Zones
 node label selecting accross different zones
 
-
-
-
-1. Node Status:
+### K8S Commands Reference
+##### Node Status
 > kubectl describe node {nodeName}
 > kubectl get namespaces
 > kubectl get nodes
@@ -485,7 +532,7 @@ node label selecting accross different zones
 
 > kubectl describe node {nodeName}
 > kubectl describe pod {podName}
-> > kubectl describe job {jobName}
+> kubectl describe job {jobName}
 
 > kubectl logs {podName}
 
@@ -501,55 +548,55 @@ node label selecting accross different zones
 > kubectl get serviceaccounts
 > kubectl get endpoints
 
-# run a pod
+##### Run a pod
 > kubectl run -it --rm --restart=Never busybox --image=gcr.io/google-containers/busybox sh 
 
-#Print the logs for a container in a pod or specified resource. If the pod has only one container, the container name is optional.
+##### Print the logs for a container in a pod or specified resource. If the pod has only one container, the container name is optional.
 kubectl logs [-f] [-p] (POD | TYPE/NAME) [-c CONTAINER] [options] 
 
-# Execute a command in a container
+##### Execute a command in a container
 kubectl exec (POD | TYPE/NAME) [-c CONTAINER] [flags] -- COMMAND [args...] [options]
 
-# Create and run a particular image in a pod
+##### Create and run a particular image in a pod
 kubectl run PODNAME --image=image [--env="key=value"] [--port=port] [--dry-run=server|client] [--overrides=inline-json]
 [--command] -- [COMMAND] [args...] [options]
 
-# Update fields of a resource using strategic merge patch, a JSON merge patch, or a JSON patch
+##### Update fields of a resource using strategic merge patch, a JSON merge patch, or a JSON patch
 kubectl patch (-f FILENAME | TYPE NAME) [-p PATCH|--patch-file FILE] [options]
 
-# Expose a resource as a new Kubernetes service. 
+##### Expose a resource as a new Kubernetes service. 
 Possible resources include (case insensitive):
 pod (po), service (svc), replicationcontroller (rc), deployment (deploy), replicaset (rs)
 
 kubectl expose (-f FILENAME | TYPE NAME) [--port=port] [--protocol=TCP|UDP|SCTP] [--target-port=number-or-name]
 [--name=name] [--external-ip=external-ip-of-service] [--type=type] [options]
 
-# Debug cluster resources using interactive debugging containers.  'debug' provides automation for common debugging tasks for cluster objects identified by resource and name. Pods will
+##### Debug cluster resources using interactive debugging containers.  'debug' provides automation for common debugging tasks for cluster objects identified by resource and name. Pods will
 be used by default if no resource is specified.
 kubectl debug (POD | TYPE[[.VERSION].GROUP]/NAME) [ -- COMMAND [args...] ] [options]
 
-# Modify kubeconfig files：
+##### Modify kubeconfig files：
 kubectl config SUBCOMMAND [options]
 
-# Display Resource (CPU/Memory) usage：the top command allows you to see the resource consumption for nodes or pods.
+##### Display Resource (CPU/Memory) usage：the top command allows you to see the resource consumption for nodes or pods.
 kubectl top node/pod
 
-# Update fields of a resource using strategic merge patch, a JSON merge patch, or a JSON patch. JSON and YAML formats are accepted.
+##### Update fields of a resource using strategic merge patch, a JSON merge patch, or a JSON patch. JSON and YAML formats are accepted.
 kubectl patch (-f FILENAME | TYPE NAME) [-p PATCH|--patch-file FILE] [options]
 
-# Forward one or more local resouce type/name's ports to a pod. The resouce could may contain an applicaiton. 
+##### Forward one or more local resouce type/name's ports to a pod. The resouce could may contain an applicaiton. 
 kubectl port-forward TYPE/NAME [options] [LOCAL_PORT:]REMOTE_PORT [...[LOCAL_PORT_N:]REMOTE_PORT_N]
 
-# Print the address of the control plane and cluster services
+##### Print the address of the control plane and cluster services
 kubectl cluster-info
 
-# Manage the rollout of a resource【deployments/daemonsets/statefusets】
+##### Manage the rollout of a resource【deployments/daemonsets/statefusets】
 kubectl rollout history/pause/restart/resume/status/undo [options]
 
-# Update the labels on a resource
+##### Update the labels on a resource
 kubectl label [--overwrite] (-f FILENAME | TYPE NAME) KEY_1=VAL_1 ... KEY_N=VAL_N [--resource-version=version]
 [options]
 
-# Apply a configuration to a resource by file name or stdin.
+##### Apply a configuration to a resource by file name or stdin.
 [It is suggested to maintain a set of configuration files in source control (see configuration as code), then use kubectl apply to push your configuration changes to the cluster]
 kubectl apply (-f FILENAME | -k DIRECTORY) [options]
