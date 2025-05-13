@@ -552,51 +552,50 @@ node label selecting accross different zones
 > kubectl run -it --rm --restart=Never busybox --image=gcr.io/google-containers/busybox sh 
 
 ##### Print the logs for a container in a pod or specified resource. If the pod has only one container, the container name is optional.
-kubectl logs [-f] [-p] (POD | TYPE/NAME) [-c CONTAINER] [options] 
+> kubectl logs [-f] [-p] (POD | TYPE/NAME) [-c CONTAINER] [options] 
 
 ##### Execute a command in a container
-kubectl exec (POD | TYPE/NAME) [-c CONTAINER] [flags] -- COMMAND [args...] [options]
+> kubectl exec (POD | TYPE/NAME) [-c CONTAINER] [flags] -- COMMAND [args...] [options]
 
 ##### Create and run a particular image in a pod
-kubectl run PODNAME --image=image [--env="key=value"] [--port=port] [--dry-run=server|client] [--overrides=inline-json]
+> kubectl run PODNAME --image=image [--env="key=value"] [--port=port] [--dry-run=server|client] [--overrides=inline-json]
 [--command] -- [COMMAND] [args...] [options]
 
 ##### Update fields of a resource using strategic merge patch, a JSON merge patch, or a JSON patch
-kubectl patch (-f FILENAME | TYPE NAME) [-p PATCH|--patch-file FILE] [options]
+> kubectl patch (-f FILENAME | TYPE NAME) [-p PATCH|--patch-file FILE] [options]
 
 ##### Expose a resource as a new Kubernetes service. 
 Possible resources include (case insensitive):
 pod (po), service (svc), replicationcontroller (rc), deployment (deploy), replicaset (rs)
 
-kubectl expose (-f FILENAME | TYPE NAME) [--port=port] [--protocol=TCP|UDP|SCTP] [--target-port=number-or-name]
+> kubectl expose (-f FILENAME | TYPE NAME) [--port=port] [--protocol=TCP|UDP|SCTP] [--target-port=number-or-name]
 [--name=name] [--external-ip=external-ip-of-service] [--type=type] [options]
 
-##### Debug cluster resources using interactive debugging containers.  'debug' provides automation for common debugging tasks for cluster objects identified by resource and name. Pods will
-be used by default if no resource is specified.
-kubectl debug (POD | TYPE[[.VERSION].GROUP]/NAME) [ -- COMMAND [args...] ] [options]
+##### Debug cluster resources using interactive debugging containers.  'debug' provides automation for common debugging tasks for cluster objects identified by resource and name. Pods will be used by default if no resource is specified.
+> kubectl debug (POD | TYPE[[.VERSION].GROUP]/NAME) [ -- COMMAND [args...] ] [options]
 
 ##### Modify kubeconfig files：
-kubectl config SUBCOMMAND [options]
+> kubectl config SUBCOMMAND [options]
 
 ##### Display Resource (CPU/Memory) usage：the top command allows you to see the resource consumption for nodes or pods.
-kubectl top node/pod
+> kubectl top node/pod
 
 ##### Update fields of a resource using strategic merge patch, a JSON merge patch, or a JSON patch. JSON and YAML formats are accepted.
-kubectl patch (-f FILENAME | TYPE NAME) [-p PATCH|--patch-file FILE] [options]
+> kubectl patch (-f FILENAME | TYPE NAME) [-p PATCH|--patch-file FILE] [options]
 
 ##### Forward one or more local resouce type/name's ports to a pod. The resouce could may contain an applicaiton. 
-kubectl port-forward TYPE/NAME [options] [LOCAL_PORT:]REMOTE_PORT [...[LOCAL_PORT_N:]REMOTE_PORT_N]
+> kubectl port-forward TYPE/NAME [options] [LOCAL_PORT:]REMOTE_PORT [...[LOCAL_PORT_N:]REMOTE_PORT_N]
 
 ##### Print the address of the control plane and cluster services
-kubectl cluster-info
+> kubectl cluster-info
 
 ##### Manage the rollout of a resource【deployments/daemonsets/statefusets】
-kubectl rollout history/pause/restart/resume/status/undo [options]
+> kubectl rollout history/pause/restart/resume/status/undo [options]
 
 ##### Update the labels on a resource
-kubectl label [--overwrite] (-f FILENAME | TYPE NAME) KEY_1=VAL_1 ... KEY_N=VAL_N [--resource-version=version]
+> kubectl label [--overwrite] (-f FILENAME | TYPE NAME) KEY_1=VAL_1 ... KEY_N=VAL_N [--resource-version=version]
 [options]
 
 ##### Apply a configuration to a resource by file name or stdin.
 [It is suggested to maintain a set of configuration files in source control (see configuration as code), then use kubectl apply to push your configuration changes to the cluster]
-kubectl apply (-f FILENAME | -k DIRECTORY) [options]
+> kubectl apply (-f FILENAME | -k DIRECTORY) [options]
