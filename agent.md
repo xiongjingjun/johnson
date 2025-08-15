@@ -8,5 +8,7 @@ AI agents don't just give suggestions—they actually perform tasks based on ent
 1. **Enterprise Search Across Multiple Platforms**: Google Agentspace **integrates with first- and third-party applications**, including Google Drive, SharePoint, Jira, Salesforce, and more. It uses advanced search and AI reasoning to find relevant information across structured and unstructured data.
 2. **Multimodal AI**: Google Agentspace goes beyond traditional text-based search by incorporating multimodal AI, meaning it can process, analyze, and generate insights across different types of data, including text, images, audio & video
 3. **Pre-built and Custom Agents**: provides a suite of pre-built AI agents designed to **automate complex enterprise tasks**. You can also create your own AI agents using low-code or no-code frameworks.
+4. **NotebookLM for Research and Data Synthesis**: which can help users summarize and extract insights from documents.
+5. **Security, Compliance, and Access Control**
 
 reference: https://premiercloud.com/blog/a-guide-to-ai-agents-and-google-agentspace
