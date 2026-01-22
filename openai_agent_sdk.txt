@@ -1,0 +1,68 @@
+OpenAI Agent SDK: https://openai.github.io/openai-agents-python
+
+Agent Configurations:
+1. Context is a dependency-injection tool: it's an object you create and pass to Runner.run(), that is passed to every agent, tool, handoff etc, and it serves as a grab bag of dependencies and state for the agent run. 
+2. output_type property： 
+3. Handoffs property: are sub‑agents the agent can delegate to
+4. hooks property
+5. Guardrails: allow you to run checks/validations on user input in parallel to the agent running, and on the agent's output once it is produced.
+6. ModelSettings.tool_choice: with value of auto/required/none
+7. tool_use_behavior: parameter in the Agent configuration controls how tool outputs are handled.
+
+Running Agents
+1. run agents via the Runner class, with 3 options: Runner.run(), Runner.run_sync(), Runner.run_streamed()
+2. run_config parameter lets you configure some global settings for the agent run
+3. Conversation Management
+a. manual conversation management: You can manually manage conversation history using the RunResultBase.to_input_list() method to get the inputs for the next turn
+b. manual automatic conversation management with Sessions: you can use Sessions to automatically handle conversation history without manually calling .to_input_list()
+c. Server-managed conversations: by two ways (using conversation_id or previous_response_id)
+
+Streaming:
+lets you subscribe to updates of the agent run as it proceeds. This can be useful for showing the end-user progress updates and partial responses.
+
+Tools: let agents take actions(things like fetching data, running code, calling external APIs, and even using a computer).
+There are 3 types of tools in the agent SDK:
+1. Hosted tools: these run on LLM servers alongside the AI models. OpenAI offers retrieval, web search and computer use as hosted tools.
+E.g. WebSearchTool, FileSearchTool, ComputerTool, CodeInterpreterTool, HostedMCPTool, ImageGenerationTool, LocalShellTool
+2. Function calling: these allow you to use any Python function as a tool.
+3. Agents as tools: this allows you to use an agent as a tool, allowing Agents to call other agents without handing off to them.
+
+The Model context protocol (MCP): standardises how applications expose tools and context to language models.
+1. Choosing an MCP integration: with these options(HostedMCPTool, MCPServerStreamableHttp, MCPServerSse, MCPServerStdio)
+1.1 HostedMCPTool Tools
+ a. Hosted tools push the entire tool round-trip into OpenAI's infrastructure. Instead of your code listing and calling tools, the HostedMCPTool forwards a server label to the Responses API. 
+ b. Streaming hosted MCP results: Hosted tools support streaming results in exactly the same way as function tools. Pass stream=True to Runner.run_streamed to consume incremental MCP output while the model is still working.
+ c. Optional approval flows: If a server can perform sensitive operations you can require human or programmatic approval before each tool execution. Configure require_approval in the tool_config with either a single policy ("always", "never") or a dict mapping tool names to policies. To make the decision inside Python, provide an on_approval_request callback.
+ d. Connector-backed hosted servers: Hosted MCP also supports OpenAI connectors. Instead of specifying a server_url, supply a connector_id and an access token. The Responses API handles authentication and the hosted server exposes the connector's tools.
+1.2 Streamable HTTP MCP servers:
+To manage the network connection yourself, use MCPServerStreamableHttp. Streamable HTTP servers are ideal when you control the transport or want to run the server inside your own infrastructure while keeping latency low.
+1.3 HTTP with SSE MCP servers: f the MCP server implements the HTTP with SSE transport, instantiate MCPServerSse. Apart from the transport, the API is identical to the Streamable HTTP server.
+1.4 stdio MCP servers
+2. Tool filtering：Each MCP server supports tool filters so that you can expose only the functions that your agent needs. Filtering can happen at construction time or dynamically per run.
+Static tool filtering & Dynamic tool filtering 
+3. Prompts: MCP servers can also provide prompts that dynamically generate agent instructions. with two methods: list_prompts() & get_prompt(name, arguments)
+4. Caching: Every agent run calls list_tools() on each MCP server. Remote servers can introduce noticeable latency, so all of the MCP server classes expose a cache_tools_list option. Set it to True only if you are confident that the tool definitions do not change frequently. To force a fresh list later, call invalidate_tools_cache() on the server instance.
+5. Tracing: automatically captures MCP activity, including 
+a. Calls to the MCP server to list tools 
+b. MCP-related information on tool calls.
+
+Handoffs: Handoffs allow an agent to delegate tasks to another agent. Handoffs are represented as tools to the LLM
+1. Creating a handoff
+All agents have a handoffs param, which can either take an Agent directly, or a Handoff object that customizes the Handoff.
+e.g. Agent(name="Triage agent", handoffs=[billing_agent, handoff(refund_agent)]) // first billing_agent is the default handoff agent while handoff(refund_agent) is a customized one.
+2. Handoff inputs
+In certain situations, you want the LLM to provide some data. e.g. imagine a handoff to an "Escalation agent". You might want a reason to be provided, so you can log it.
+3. Input filters
+en a handoff occurs, it's as though the new agent takes over the conversation, and gets to see the entire previous conversation history. If you want to change this, you can set an input_filter. An input filter is a function that receives the existing input via a HandoffInputData, and must return a new HandoffInputData.
+
+Tracing：The Agents SDK includes built-in tracing, collecting a comprehensive record of events during an agent run: LLM generations, tool calls, handoffs, guardrails, and even custom events that occur. 
+1. Traces & Spans
+1.1 Traces: Traces represent a single end-to-end operation of a "workflow". They're composed of Spans. Having properties: workflow_name, trace_id, group_id, disabled, metadata
+1.2 Spans：Spans represent operations that have a start and end time. Having properties: started_at, ended_at, trace_id, parent_id, span_data, 
+
+Context Mangement:
+1. Context
+The most important thing to be aware of: every agent, tool function, lifecycle etc for a given agent run must use the same type of context.
+The context object is not sent to the LLM. It is purely a local object that you can read from, write to and call methods on it.
+2. ToolContext: access extra metadata about the tool being executed — such as its name, call ID, or raw argument string. It extends RunContextWrapper
+3. Agent/LLM context
